@@ -46,7 +46,7 @@ def add_transactions_from_csv(filepath, account_name):
                     parsed_row['event_datetime'] = dt.strptime(each_col, '%Y-%m-%d')
 
                 if each_def_col['field_name'] == 'event_name':
-                    parsed_row['name'] = each_col.lower().strip()
+                    parsed_row['name'] = each_col.lower().strip().replace("'", "").replace(",", "")
 
                 # with cibc at least, we only ever have a single credit or single debit amount
                 # we need to resolve this to a single amount
@@ -65,7 +65,7 @@ def add_transactions_from_csv(filepath, account_name):
 
     # send them to get added to our existing transaction store.
     print('Done reading, adding transactions')
-    transactions.add_new_transactions(parsed_data)
+    transactions.add_new_transactions(account_name, parsed_data)
 
 
 
