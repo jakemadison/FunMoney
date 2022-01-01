@@ -60,6 +60,26 @@ def update_category(target_id, new_category):
     execute_on_db(statement)
 
 
+def get_transactions_by_name(event_name, account=None):
+
+    if account is None:
+        statement = f"select * from transactions where name='{event_name}';"
+    else:
+        statement = f"select * from transactions where account_name='{account}' and name='{event_name}';"
+
+    db_result = execute_on_db(statement)
+    if not db_result['result']:
+        return []
+
+    dict_res = []
+    for row in db_result['result']:
+        dict_res.append(
+            dict(zip(db_result['schema'], row))
+        )
+
+    return dict_res
+
+
 def get_transactions_for_date(account_name, target_datetime):
 
     statement = f"select * from transactions where account_name = '{account_name}' and event_datetime = '{target_datetime}';"
@@ -115,9 +135,8 @@ def insert_transaction(transaction):
             '{category}' 
         );
     """
-    insert = statement.format(**transaction)
-
-    print(f'running {insert}')
+    # insert = statement.format(**transaction)
+    # print(f'running {insert}')
     execute_on_db(
         statement.format(**transaction)
     )

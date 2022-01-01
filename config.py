@@ -28,3 +28,7 @@ EXPORT_DEFINITIONS = {
             ]
     }
 }
+
+CAT_OVERRIDES = {
+    'dumbthingIwantdifferent': 'replaced with this'
+}
