@@ -14,3 +14,17 @@ DB_NAME = 'main.db'
 BASE_PATH = os.path.dirname(__file__)
 DB_PATH = os.path.join(BASE_PATH, DB_NAME)
 
+EXPORT_DEFINITIONS = {
+    'cibc_cheq': {
+
+        # csv spec could go here.
+
+        'columns':
+            [
+                {'field_name': 'event_date'},  # date formant could go here.
+                {'field_name': 'event_name'},
+                {'field_name': 'credit_amount'},
+                {'field_name': 'debit_amount'}
+            ]
+    }
+}
