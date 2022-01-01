@@ -5,6 +5,8 @@ Most important is updating transactions.
 
 import csv
 from datetime import datetime as dt
+
+import transactions
 from config import EXPORT_DEFINITIONS
 
 
@@ -36,34 +38,34 @@ def add_transactions_from_csv(filepath, account_name):
         for line in reader:
             print(line)
 
-            parsed_row = []
+            parsed_row = {'account_name': account_name}
 
             # todo: what about rows with not enough data?
             for each_def_col, each_col in zip(target_def['columns'], line):
                 if each_def_col['field_name'] == 'event_date':
-                    val = dt.strptime(each_col, '%Y-%m-%d')
+                    parsed_row['event_datetime'] = dt.strptime(each_col, '%Y-%m-%d')
 
                 if each_def_col['field_name'] == 'event_name':
-                    val = each_col.lower().strip()
+                    parsed_row['name'] = each_col.lower().strip()
 
+                # with cibc at least, we only ever have a single credit or single debit amount
+                # we need to resolve this to a single amount
                 if each_def_col['field_name'] == 'credit_amount':
-                    val = int(float(each_col) * 100)
+                    if each_col == 0 or each_col:
+                        parsed_row['amount_cents'] = int(float(each_col) * 100)
 
                 # we'll store debits as negative rather than apply a label somewhere
                 if each_def_col['field_name'] == 'debit_amount':
-                    val = - int(float(each_col) * 100)
+                    if each_col == 0 or each_col:
+                        parsed_row['amount_cents'] = - int(float(each_col) * 100)
 
-                parsed_row.append(
-                    {
-                        each_def_col['field_name']: val
-                    }
-                )
             parsed_data.append(parsed_row)
 
+    # okay! we have some parsed data now :D
 
-    for row in parsed_data:
-        print(row)
-
+    # send them to get added to our existing transaction store.
+    print('Done reading, adding transactions')
+    transactions.add_new_transactions(parsed_data)
 
 
 
@@ -71,6 +73,7 @@ def add_transactions_from_csv(filepath, account_name):
 
 
 add_transactions_from_csv(
-    '/Users/themadisons/Downloads/cibc (4).csv',
+    # '/Users/themadisons/Downloads/cibc (4).csv',  # mac
+    'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
     'cibc_cheq'
 )

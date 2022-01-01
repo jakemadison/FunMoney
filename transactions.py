@@ -19,3 +19,5 @@ def guess_category(event_name, account):
 
 
 
+def add_new_transactions(transaction_list):
+    pass
