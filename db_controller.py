@@ -135,8 +135,12 @@ def insert_transaction(transaction):
             '{category}' 
         );
     """
-    # insert = statement.format(**transaction)
+    insert = statement.format(**transaction)
     # print(f'running {insert}')
-    execute_on_db(
-        statement.format(**transaction)
-    )
+    try:
+        execute_on_db(
+            statement.format(**transaction)
+        )
+    except Exception:
+        print(f'insert was {insert}')
+        raise

@@ -69,11 +69,63 @@ def add_transactions_from_csv(filepath, account_name):
 
 
 
+def add_transactions_from_mint(filepath):
+
+    # so, open the file, read in each line.
+    parsed_data = []
+
+    with open(filepath) as rf:
+        reader = csv.reader(rf, delimiter=',')  # todo: config these
+        for i, line in enumerate(reader):
+
+            if i == 0:
+                continue
+
+            account_label = line[6]
+            account_name = {
+                'CIBC SMART ACCOUNT': 'cibc_cheq',
+                'VISA CAD': 'cibc_cc',
+                'Savings Account': 'cibc_sav',
+                'USD Savings Acct': 'cibc_us',
+
+                'Save': 'ws_save',
+
+                'E Package Chequing XXXXXXXX5015': 'vc_cheq',
+                'Jumpstart High Interest XXXXXXXX1324': 'vc_sav'
+
+            }[account_label]
+
+            parsed_row = {
+                'account_name': account_name,
+                'event_datetime': dt.strptime(line[0], '%m/%d/%Y'),
+                'name': line[1].lower().strip().replace("'", "").replace(",", "")
+            }
+            if line[4] == 'debit':
+                amt = - int(float(line[3]) * 100)
+            elif line[4] == 'credit':
+                amt = int(float(line[3]) * 100)
+            else:
+                print(f'unkown type!! {line[4]}')
+                continue
+
+            parsed_row['amount_cents'] = amt
+            parsed_row['category'] = line[5]
+
+            # for now we're dropping labels and notes
+            parsed_data.append(parsed_row)
+
+    # okay! we have some parsed data now :D
+
+    # send them to get added to our existing transaction store.
+    print('Done reading, adding transactions')
+    import db_controller
+    # transactions.add_new_transactions(account_name, parsed_data)
+    for num, t in enumerate(parsed_data):
+        print(num)
+        db_controller.insert_transaction(t)
 
 
-
-add_transactions_from_csv(
+add_transactions_from_mint(
     # '/Users/themadisons/Downloads/cibc (4).csv',  # mac
-    'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
-    'cibc_cheq'
+    'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
 )
