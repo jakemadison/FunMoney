@@ -131,11 +131,12 @@ def add_transactions_from_mint(filepath):
 # )
 
 add_transactions_from_csv(
-    '/Users/themadisons/Downloads/cibc (6).csv',  # mac
+    # '/Users/themadisons/Downloads/cibc (6).csv',  # mac
+    'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
     'cibc_cheq'
 )
-
-add_transactions_from_csv(
-    '/Users/themadisons/Downloads/cibc (7).csv',  # mac
-    'cibc_cc'
-)
+#
+# add_transactions_from_csv(
+#     '/Users/themadisons/Downloads/cibc (7).csv',  # mac
+#     'cibc_cc'
+# )
