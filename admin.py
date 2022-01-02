@@ -125,7 +125,17 @@ def add_transactions_from_mint(filepath):
         db_controller.insert_transaction(t)
 
 
-add_transactions_from_mint(
-    # '/Users/themadisons/Downloads/cibc (4).csv',  # mac
-    'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
+# add_transactions_from_mint(
+#     # '/Users/themadisons/Downloads/cibc (4).csv',  # mac
+#     'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
+# )
+
+add_transactions_from_csv(
+    '/Users/themadisons/Downloads/cibc (6).csv',  # mac
+    'cibc_cheq'
+)
+
+add_transactions_from_csv(
+    '/Users/themadisons/Downloads/cibc (7).csv',  # mac
+    'cibc_cc'
 )

@@ -61,7 +61,7 @@ def guess_category(event):
         f"""
             select category, count(1) as cnt from (
                     select category from transactions where 
-                        name = '{stripped_event_name}'
+                        name = '{stripped_event_name}' and
                         account_name = '{event['account_name']}'
                 )
                 group by 1 

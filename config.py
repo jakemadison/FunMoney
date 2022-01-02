@@ -26,6 +26,19 @@ EXPORT_DEFINITIONS = {
                 {'field_name': 'debit_amount'},
                 {'field_name': 'credit_amount'}
             ]
+    },
+
+    'cibc_cc': {
+
+        # csv spec could go here.
+
+        'columns':
+            [
+                {'field_name': 'event_date'},  # date formant could go here.
+                {'field_name': 'event_name'},
+                {'field_name': 'debit_amount'},
+                {'field_name': 'credit_amount'}
+            ]
     }
 }
 
