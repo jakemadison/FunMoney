@@ -16,14 +16,14 @@ def execute_on_db(statement):
     cur.execute(statement)
 
     result = cur.fetchall()
-    print(f'result is {result}')
+    # print(f'result is {result}')
 
     if cur.description is None:
         schema = ''
     else:
         schema = [f[0] for f in cur.description]
 
-    print(f'cursor desc is: {schema}')
+    # print(f'cursor desc is: {schema}')
 
     conn.commit()
     conn.close()
