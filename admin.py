@@ -98,7 +98,9 @@ def add_transactions_from_mint(filepath):
             parsed_row = {
                 'account_name': account_name,
                 'event_datetime': dt.strptime(line[0], '%m/%d/%Y'),
-                'name': line[1].lower().strip().replace("'", "").replace(",", "")
+
+                # using original desc rather than mint's parsed description.
+                'name': line[2].lower().strip().replace("'", "").replace(",", "")
             }
             if line[4] == 'debit':
                 amt = - int(float(line[3]) * 100)
@@ -126,7 +128,6 @@ def add_transactions_from_mint(filepath):
 
 
 # add_transactions_from_mint(
-#     # '/Users/themadisons/Downloads/cibc (4).csv',  # mac
 #     'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
 # )
 
@@ -135,6 +136,9 @@ add_transactions_from_csv(
     'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
     'cibc_cheq'
 )
+
+# transactions.build_classifier()
+
 #
 # add_transactions_from_csv(
 #     '/Users/themadisons/Downloads/cibc (7).csv',  # mac

@@ -11,15 +11,19 @@ from textblob.classifiers import NaiveBayesClassifier
 def build_classifier():
 
     statement = """
-        select name, category from transactions where category is not null and category != 'idk' order by random();
+        select name, category from transactions where category is not null and category != 'idk' 
+        order by random()
+        limit 7000
+        ;
     """
     db_res = db_controller.execute_on_db(statement)
 
     training_data = db_res['result']
 
     print(len(training_data))
-    train = training_data[:3900]
-    test = training_data[3900:]
+    train = training_data[:-100]
+    test = training_data[-100:]
+    print(f'data: {len(training_data)}, train: {len(train)}, test: {len(test)}')
     # print(test)
 
     print('building classifier')
@@ -30,7 +34,8 @@ def build_classifier():
     acc = round(classifier.accuracy(test), 2) * 100
     print(f'classifier accuracy: {acc}%')
 
-    return
+    # return
+    print('getting undetermined categories for matching...')
     statement = """
         select name from transactions where category is null or category = 'idk';
     """
@@ -46,7 +51,7 @@ def build_classifier():
         print(f'I think that: "{target}" should be a {cl_result} ({prob_pos}%)')
 
 
-build_classifier()
+# build_classifier()
 # for ii in db_controller.execute_on_db("select distinct(category) from transactions;")['result']:
 #     print(ii)
 
