@@ -46,7 +46,18 @@ def add_transactions_from_csv(filepath, account_name):
                     parsed_row['event_datetime'] = dt.strptime(each_col, '%Y-%m-%d')
 
                 if each_def_col['field_name'] == 'event_name':
-                    parsed_row['name'] = each_col.lower().strip().replace("'", "").replace(",", "")
+                    name_val = each_col.lower().strip().replace("'", "").replace(",", "")
+                    name_val = name_val.replace(
+                        "point of sale - interac retail purchase", ""
+                    ).replace(
+                        "point of sale", ""
+                    ).replace(
+                        "internet banking internet bill pay", ""
+                    )
+
+                    parsed_row['name'] = ''.join(
+                        [i for i in name_val if not i.isdigit()]
+                    ).strip()
 
                 # with cibc at least, we only ever have a single credit or single debit amount
                 # we need to resolve this to a single amount
@@ -99,8 +110,8 @@ def add_transactions_from_mint(filepath):
                 'account_name': account_name,
                 'event_datetime': dt.strptime(line[0], '%m/%d/%Y'),
 
-                # using original desc rather than mint's parsed description.
-                'name': line[2].lower().strip().replace("'", "").replace(",", "")
+                # original desc sometimes has no info at all!  we'll use the altered description
+                'name': line[1].lower().strip().replace("'", "").replace(",", "")
             }
             if line[4] == 'debit':
                 amt = - int(float(line[3]) * 100)
@@ -132,12 +143,12 @@ def add_transactions_from_mint(filepath):
 # )
 
 add_transactions_from_csv(
-    # '/Users/themadisons/Downloads/cibc (6).csv',  # mac
+#     '/Users/themadisons/Downloads/cibc (6).csv',  # mac
     'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
     'cibc_cheq'
 )
 
-# transactions.build_classifier()
+transactions.build_classifier()
 
 #
 # add_transactions_from_csv(
