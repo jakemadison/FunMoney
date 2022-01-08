@@ -37,12 +37,14 @@ def build_classifier():
     # return
     print('getting undetermined categories for matching...')
     statement = """
-        select name from transactions where category is null or category = 'idk';
+        select trim(name) from transactions where category is null or category = 'idk';
     """
 
     db_res = db_controller.execute_on_db(statement)
 
     targets = [r[0] for r in db_res['result']]
+
+    print(f'iterating over {len(targets)} targets')
 
     for target in targets:
         cl_result = classifier.classify(target)
@@ -51,9 +53,62 @@ def build_classifier():
         print(f'I think that: "{target}" should be a {cl_result} ({prob_pos}%)')
 
 
-# build_classifier()
-# for ii in db_controller.execute_on_db("select distinct(category) from transactions;")['result']:
-#     print(ii)
+def sklearn_model():
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.naive_bayes import MultinomialNB
+    from sklearn.pipeline import make_pipeline
+
+    model = make_pipeline(TfidfVectorizer(), MultinomialNB())
+
+    statement = """
+        select name, category from transactions where category is not null and category != 'idk' 
+        order by random()
+        limit 70000
+        ;
+    """
+    db_res = db_controller.execute_on_db(statement)
+
+    training_data = db_res['result']
+
+    print(len(training_data))
+    train = training_data[:-100]
+    test = training_data[-100:]
+    print(f'data: {len(training_data)}, train: {len(train)}, test: {len(test)}')
+    # print(test)
+
+    print('building classifier')
+    train_data = [t[0] for t in train]
+    train_target = [t[1] for t in train]
+    model.fit(train_data, train_target)
+    print('done building classifier')
+
+    print('assessing classifier')
+
+    from sklearn.metrics import accuracy_score
+
+    preds = model.predict([t[0] for t in test])
+
+    acc = accuracy_score(
+        [t[1] for t in test], preds
+    )*100
+
+    print(f'classifier accuracy: {acc}%')
+
+    print('getting undetermined categories for matching...')
+    statement = """
+        select trim(name) from transactions where category is null or category = 'idk';
+    """
+
+    db_res = db_controller.execute_on_db(statement)
+
+    targets = [r[0] for r in db_res['result']]
+
+    print(f'iterating over {len(targets)} targets')
+
+    for target in targets:
+        cl_result = model.predict([target])[0]
+        prob_pos = round(max(model.predict_proba([target])[0]*100), 2)
+        print(f'I think that: "{target}" should be {cl_result} ({prob_pos}%)')
 
 
 def guess_category(event):

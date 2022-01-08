@@ -142,13 +142,14 @@ def add_transactions_from_mint(filepath):
 #     'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
 # )
 
-add_transactions_from_csv(
+# add_transactions_from_csv(
 #     '/Users/themadisons/Downloads/cibc (6).csv',  # mac
-    'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
-    'cibc_cheq'
-)
+#     'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
+#     'cibc_cheq'
+# )
 
-transactions.build_classifier()
+# transactions.build_classifier()
+transactions.sklearn_model()
 
 #
 # add_transactions_from_csv(
