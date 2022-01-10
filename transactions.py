@@ -19,6 +19,15 @@ MODEL = None
 
 def build_classifier():
 
+    """
+    Accuracy on first pass 66%.
+    - Use original descriptions in import
+    - import the entire mint set
+    - recheck accuracy
+
+    :return:
+    """
+
     statement = """
         select name, category from transactions where category is not null and category != 'idk' 
         order by random()
@@ -160,9 +169,10 @@ def guess_category(event):
     :param event:
     :return:
     """
+    if MODEL is None:
+        init_model()
 
-    init_model()
-    print(event)
+    # print(event)
 
     target = event['name']
     cl_result = MODEL.predict(
@@ -178,7 +188,7 @@ def guess_category(event):
         2
     )
 
-    print(f'I think that: "{target}" should be {cl_result} ({prob_pos}%)')
+    print(f'I think that: "{target}" should be {cl_result}  -- ({prob_pos}%)')
 
     return cl_result
 
@@ -279,44 +289,15 @@ def foo_category(event):
 
 def add_new_transactions_to_db(transaction_list):
 
-    statement = """
-        select distinct(category) from transactions;
-    """
-    all_cats = db_controller.execute_on_db(statement)
-
-    class myCmd(cmd.Cmd):
-
-        def __init__(self, cat_guess):
-            cmd.Cmd.__init__(self)
-            self.cat_guess = cat_guess
-
-        def preloop(self):
-            print(f'I think that this event should be {self.cat_guess}')
-
-        def default(self, line):
-            if line not in all_cats:
-                print('I do not know that category')
-                return
-
-            print(f'adding {line} as category to thing')
-
-        def completedefault(self,  text, line, begidx, endidx):
-            if text:
-                return [cat for cat in all_cats if cat.startswith(text)]
-            else:
-                return all_cats
-
-        def emptyline(self):
-            print('i will keep it!')
+    # statement = """
+    #     select distinct(category) from transactions;
+    # """
+    # all_cats = db_controller.execute_on_db(statement)
 
     for transaction in transaction_list:
-        cat_guess = guess_category(transaction)
-        myCmd(cat_guess).cmdloop()
-
         # one at a time is dumb but who cares.
-
-        transaction['category'] = 'foo'
-        # db_controller.insert_transaction(transaction)
+        transaction['category'] = guess_category(transaction)
+        db_controller.insert_transaction(transaction)
 
 
 def add_new_transactions(account_name, transaction_list, force_add=False):

@@ -39,7 +39,30 @@ EXPORT_DEFINITIONS = {
                 {'field_name': 'debit_amount'},
                 {'field_name': 'credit_amount'}
             ]
-    }
+    },
+
+    'vc_cheq': {
+
+        # csv spec could go here.
+
+        'columns':
+            [
+                {'field_name': 'account_number'},
+                {'field_name': 'event_date', 'format': '%d-%b-%Y'},
+                {'field_name': 'event_name'},
+
+                # no idea what this field is for
+                {'field_name': 'unknown1'},
+
+                {'field_name': 'debit_amount'},
+                {'field_name': 'credit_amount'},
+
+                {'field_name': 'balance'}
+            ]
+    },
+
+
+
 }
 
 CAT_OVERRIDES = {
