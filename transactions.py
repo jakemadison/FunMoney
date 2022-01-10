@@ -6,6 +6,15 @@ import textblob as textblob
 import db_controller
 from config import CAT_OVERRIDES
 from textblob.classifiers import NaiveBayesClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import accuracy_score
+
+import cmd
+
+# todo: don't rebuild model everytime.  Pickle it or something
+MODEL = None
 
 
 def build_classifier():
@@ -53,10 +62,7 @@ def build_classifier():
         print(f'I think that: "{target}" should be a {cl_result} ({prob_pos}%)')
 
 
-def sklearn_model():
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.naive_bayes import MultinomialNB
-    from sklearn.pipeline import make_pipeline
+def play_with_sklearn_model():
 
     model = make_pipeline(TfidfVectorizer(), MultinomialNB())
 
@@ -84,8 +90,6 @@ def sklearn_model():
 
     print('assessing classifier')
 
-    from sklearn.metrics import accuracy_score
-
     preds = model.predict([t[0] for t in test])
 
     acc = accuracy_score(
@@ -111,7 +115,75 @@ def sklearn_model():
         print(f'I think that: "{target}" should be {cl_result} ({prob_pos}%)')
 
 
+def init_model():
+
+    global MODEL
+
+    MODEL = make_pipeline(TfidfVectorizer(), MultinomialNB())
+
+    statement = """
+        select name, category from transactions where category is not null and category != 'idk' 
+        order by random()
+        ;
+    """
+    db_res = db_controller.execute_on_db(statement)
+
+    training_data = db_res['result']
+
+    print(len(training_data))
+    train = training_data[:-100]
+    test = training_data[-10:]
+    print(f'data: {len(training_data)}, train: {len(train)}, test: {len(test)}')
+    # print(test)
+
+    print('building classifier')
+    train_data = [t[0] for t in train]
+    train_target = [t[1] for t in train]
+    MODEL.fit(train_data, train_target)
+    print('done building classifier')
+
+    print('assessing model')
+    preds = MODEL.predict([t[0] for t in test])
+
+    acc = accuracy_score(
+        [t[1] for t in test], preds
+    ) * 100
+
+    print(f'model accuracy: {acc}%')
+
+
 def guess_category(event):
+
+    """
+    Use our model to try and guess a category.
+
+    :param event:
+    :return:
+    """
+
+    init_model()
+    print(event)
+
+    target = event['name']
+    cl_result = MODEL.predict(
+        [target]
+    )[0]
+
+    prob_pos = round(
+        max(
+            MODEL.predict_proba(
+                [event['name']]
+            )[0]*100
+        ),
+        2
+    )
+
+    print(f'I think that: "{target}" should be {cl_result} ({prob_pos}%)')
+
+    return cl_result
+
+
+def foo_category(event):
     """
     Given an event_name and account, try and guess what the category might be.
 
@@ -207,16 +279,47 @@ def guess_category(event):
 
 def add_new_transactions_to_db(transaction_list):
 
+    statement = """
+        select distinct(category) from transactions;
+    """
+    all_cats = db_controller.execute_on_db(statement)
+
+    class myCmd(cmd.Cmd):
+
+        def __init__(self, cat_guess):
+            cmd.Cmd.__init__(self)
+            self.cat_guess = cat_guess
+
+        def preloop(self):
+            print(f'I think that this event should be {self.cat_guess}')
+
+        def default(self, line):
+            if line not in all_cats:
+                print('I do not know that category')
+                return
+
+            print(f'adding {line} as category to thing')
+
+        def completedefault(self,  text, line, begidx, endidx):
+            if text:
+                return [cat for cat in all_cats if cat.startswith(text)]
+            else:
+                return all_cats
+
+        def emptyline(self):
+            print('i will keep it!')
+
     for transaction in transaction_list:
-        transaction['category'] = guess_category(transaction)
+        cat_guess = guess_category(transaction)
+        myCmd(cat_guess).cmdloop()
 
         # one at a time is dumb but who cares.
-        db_controller.insert_transaction(transaction)
+
+        transaction['category'] = 'foo'
+        # db_controller.insert_transaction(transaction)
 
 
-
-
-def add_new_transactions(account_name, transaction_list):
+def add_new_transactions(account_name, transaction_list, force_add=False):
     """
     Given a list of transactions, attempt to add those transactions to the DB.
 
@@ -236,7 +339,7 @@ def add_new_transactions(account_name, transaction_list):
 
     max_new_transaction = max([r['event_datetime'] for r in transaction_list])
 
-    if not most_recent or most_recent['event_datetime'] < max_new_transaction:
+    if force_add or not most_recent or most_recent['event_datetime'] < max_new_transaction:
         print('add all transactions from this batch!')
         add_new_transactions_to_db(transaction_list)
         print(f'added {len(transaction_list)} transactions')

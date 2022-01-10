@@ -149,7 +149,7 @@ def add_transactions_from_mint(filepath):
 # )
 
 # transactions.build_classifier()
-transactions.sklearn_model()
+# transactions.sklearn_model()
 
 #
 # add_transactions_from_csv(
