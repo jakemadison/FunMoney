@@ -351,3 +351,41 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
 
     add_new_transactions_to_db(valid_events)
     print(f'successfully added {len(valid_events)} to db')
+
+
+def add_balances_to_db(balances_list):
+
+    for balance in balances_list:
+        statement = """
+            insert into balances (account_name, event_datetime, amount_cents) 
+            values (
+                '{account_name}',
+                '{event_datetime}',
+                {amount_cents}
+            );
+        """
+        insert = statement.format(**balance)
+        print(f'running {insert}')
+
+        db_controller.execute_on_db(
+            statement.format(**balance)
+        )
+
+
+def get_all_balances():
+    statement = """
+    select 
+        account_name, amount_cents/100 as amount, most_recent,
+        (sum(amount_cents) over ())/100 as total_amount  
+    from
+        (select 
+            account_name, 
+            amount_cents,
+            event_datetime,
+            max(event_datetime) over (partition by account_name) as most_recent
+            
+            from balances) b  
+            where event_datetime = most_recent;
+    """
+    res = db_controller.execute_on_db(statement)
+    return res['result']

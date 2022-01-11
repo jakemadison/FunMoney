@@ -8,3 +8,5 @@ What's left to do?
 - make nice charts
 - add balances schema
   - allow you to add each balance to each account
+- do a fancy interpolation of account balance based on transactions on that account
+- 

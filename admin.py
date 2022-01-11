@@ -149,6 +149,57 @@ def add_transactions_from_mint(filepath):
         db_controller.insert_transaction(t)
 
 
+def add_balances(filepath, account_name):
+
+    parsed_events = []
+    with open(filepath) as rf:
+        reader = csv.reader(rf, delimiter=',')  # todo: config these
+        pos = None
+        for i, line in enumerate(reader):
+
+            if i == 0:
+                if line[-1] == 'Assets':
+                    pos = True
+                elif line[-1] == 'Debts':
+                    pos = False
+                continue
+
+            # print(line)
+            target_date = dt.strptime(line[0], '%B %Y')
+            amount = line[-1].replace('$', '').replace(',', '')
+            amount_cents = int(float(amount)*100)
+            amount_cents = - amount_cents if not pos else amount_cents
+
+            event = {
+                'event_datetime': target_date,
+                'account_name': account_name,
+                'amount_cents': amount_cents
+            }
+
+            print(f'{target_date} -> {amount_cents}')
+            parsed_events.append(event)
+
+    transactions.add_balances_to_db(parsed_events)
+
+
+def get_current_balances():
+    import json
+
+    bals = transactions.get_all_balances()
+
+    for b in bals:
+        print(b)
+
+
+get_current_balances()
+
+# add_balances(
+
+
+#     '/Users/themadisons/Downloads/cibc_us_balances.csv',
+#     'cibc_us'
+# )
+
 # add_transactions_from_mint(
 #     'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
 # )
@@ -169,7 +220,7 @@ def add_transactions_from_mint(filepath):
 #     'cibc_cheq'
 # )
 
-add_transactions_from_csv(
-    '/Users/themadisons/Downloads/statement.csv',  # mac
-    'vc_cheq'
-)
+# add_transactions_from_csv(
+#     '/Users/themadisons/Downloads/statement.csv',  # mac
+#     'vc_cheq'
+# )
