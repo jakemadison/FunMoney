@@ -91,7 +91,18 @@ def add_transactions_from_csv(filepath, account_name):
     transactions.add_new_transactions(account_name, parsed_data)
 
 
-def add_transactions_from_mint(filepath):
+def add_transactions_from_mint(filepath, max_date=None, min_date=None):
+
+    """
+    min_date: ignore dates lower than x.
+    max_date: ignore dates greater than y.
+    """
+
+    if min_date:
+        min_date = dt.strptime(min_date, '%Y-%m-%d')
+
+    if max_date:
+        max_date = dt.strptime(max_date, '%Y-%m-%d')
 
     # so, open the file, read in each line.
     parsed_data = []
@@ -117,9 +128,18 @@ def add_transactions_from_mint(filepath):
 
             }[account_label]
 
+            # check the date:
+            row_date = dt.strptime(line[0], '%m/%d/%Y')
+
+            if min_date and row_date < min_date:
+                continue
+
+            if max_date and row_date > max_date:
+                continue
+
             parsed_row = {
                 'account_name': account_name,
-                'event_datetime': dt.strptime(line[0], '%m/%d/%Y'),
+                'event_datetime': row_date,
 
                 # original desc sometimes has no info at all!  we'll use the altered description
                 'name': line[1].lower().strip().replace("'", "").replace(",", "")
@@ -183,7 +203,6 @@ def add_balances(filepath, account_name):
 
 
 def get_current_balances():
-    import json
 
     bals = transactions.get_all_balances()
 
@@ -193,30 +212,20 @@ def get_current_balances():
 
 get_current_balances()
 
-# add_balances(
-
-
-#     '/Users/themadisons/Downloads/cibc_us_balances.csv',
-#     'cibc_us'
-# )
 
 # add_transactions_from_mint(
-#     'C:\\Users\\jakem\\Downloads\\transactions (10).csv'
+#     '/Users/themadisons/Downloads/transactions (10).csv',
+#     max_date='2020-03-10'
 # )
 
+
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc (6).csv',  # mac
-#     'C:\\Users\\jakem\\Downloads\\cibc (4).csv',
-#     'cibc_cheq'
+#     '/Users/themadisons/Downloads/cibc (14).csv',  # mac
+#     'cibc_cc'
 # )
-
-# transactions.build_classifier()
-# transactions.sklearn_model()
-
-#
 #
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc (8).csv',  # mac
+#     '/Users/themadisons/Downloads/cibc (13).csv',  # mac
 #     'cibc_cheq'
 # )
 
