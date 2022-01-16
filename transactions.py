@@ -193,6 +193,21 @@ def guess_category(event):
     return cl_result
 
 
+def re_categorize():
+    query = """
+        select * from transactions where category='Uncategorized';
+    """
+    result = db_controller.execute_on_db(query)
+
+    for r in result['result']:
+        dict_r = dict(zip(result['schema'], r))
+        # print(dict_r)
+        cl_res = guess_category(dict_r)
+        t_id = dict_r['transaction_id']
+        updoot = f"update transactions set category = '{cl_res}' where transaction_id = {t_id};"
+        db_controller.execute_on_db(updoot)
+
+
 def foo_category(event):
     """
     Given an event_name and account, try and guess what the category might be.

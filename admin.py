@@ -209,27 +209,25 @@ def get_current_balances():
     for b in bals:
         print(b)
 
-
 get_current_balances()
 
 
-# add_transactions_from_mint(
-#     '/Users/themadisons/Downloads/transactions (10).csv',
-#     max_date='2020-03-10'
-# )
+
+
 
 
 # add_transactions_from_csv(
 #     '/Users/themadisons/Downloads/cibc (14).csv',  # mac
 #     'cibc_cc'
+#     'cibc_cheq'
 # )
 #
 # add_transactions_from_csv(
 #     '/Users/themadisons/Downloads/cibc (13).csv',  # mac
-#     'cibc_cheq'
+
 # )
 
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/statement.csv',  # mac
+#     '/Users/themadisons/Downloads/statement (1).csv',  # mac
 #     'vc_cheq'
 # )
