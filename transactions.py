@@ -17,6 +17,7 @@ import cmd
 MODEL = None
 
 
+
 def build_classifier():
 
     """
@@ -140,8 +141,8 @@ def init_model():
     training_data = db_res['result']
 
     print(len(training_data))
-    train = training_data[:-100]
-    test = training_data[-10:]
+    train = training_data[:-1000]
+    test = training_data[-100:]
     print(f'data: {len(training_data)}, train: {len(train)}, test: {len(test)}')
     # print(test)
 
@@ -340,6 +341,7 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
     For now, just assume this is all the same account.
     :param account_name
     :param transaction_list:
+    :param force_add
     :return:
     """
 
