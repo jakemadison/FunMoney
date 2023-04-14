@@ -188,7 +188,10 @@ def guess_category(event):
         2
     )
 
-    print(f'I think that: "{target}" should be {cl_result}  -- ({prob_pos}%)')
+    print(f'I think that: "{target}" should be {cl_result}  -- ({prob_pos}%)', end=' ')
+    cat = input('Enter or replace with:')
+    if cat != '':
+        cl_result = cat
 
     return cl_result
 
@@ -362,8 +365,10 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
     # todo: are there ever valid cases where we have older transactions than max that we want to add?
     for each_transaction in transaction_list:
 
+        # print(each_transaction, end=' ->')
         # if the transaction is earlier than our latest event, skip it.
         if each_transaction['event_datetime'] < most_recent['event_datetime']:
+            # print('too young')
             continue  # skip it
 
         if each_transaction['event_datetime'] == most_recent['event_datetime']:

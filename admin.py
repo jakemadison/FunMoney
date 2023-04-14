@@ -244,11 +244,11 @@ transactions.add_balances_to_db(
     ]
 )
 
-
-# add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc(24).csv',  # mac
-#     'cibc_cheq'
-# )
+print('\n\n')
+add_transactions_from_csv(
+    '/Users/themadisons/Downloads/cibc(24).csv',  # mac
+    'cibc_cheq'
+)
 #
 # add_transactions_from_csv(
 #     '/Users/themadisons/Downloads/cibc(25).csv',  # mac
