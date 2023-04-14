@@ -315,6 +315,19 @@ def add_new_transactions_to_db(transaction_list):
         db_controller.insert_transaction(transaction)
 
 
+def matches_duplicate_transaction(target_transaction, sample_transactions):
+    for each_transaction in sample_transactions:
+        if (
+                each_transaction['name'] == target_transaction['name'] and
+                each_transaction['event_datetime'] == target_transaction['event_datetime'] and
+                each_transaction['amount_cents'] == target_transaction['amount_cents'] and
+                each_transaction['account_name'] == target_transaction['account_name']
+        ):
+            return True
+
+    return False
+
+
 def add_new_transactions(account_name, transaction_list, force_add=False):
     """
     Given a list of transactions, attempt to add those transactions to the DB.
@@ -333,9 +346,9 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
     # if our earliest transaction is later than this, add everything
     print(most_recent)
 
-    max_new_transaction = max([r['event_datetime'] for r in transaction_list])
+    min_new_transaction = min([r['event_datetime'] for r in transaction_list])
 
-    if force_add or not most_recent or most_recent['event_datetime'] < max_new_transaction:
+    if force_add or not most_recent or min_new_transaction > most_recent['event_datetime']:
         print('add all transactions from this batch!')
         add_new_transactions_to_db(transaction_list)
         print(f'added {len(transaction_list)} transactions')
@@ -348,6 +361,8 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
 
     # todo: are there ever valid cases where we have older transactions than max that we want to add?
     for each_transaction in transaction_list:
+
+        # if the transaction is earlier than our latest event, skip it.
         if each_transaction['event_datetime'] < most_recent['event_datetime']:
             continue  # skip it
 
@@ -355,11 +370,9 @@ def add_new_transactions(account_name, transaction_list, force_add=False):
             transactions_at_date = db_controller.get_transactions_for_date(
                 account_name, each_transaction['event_datetime']
             )
-            event_names_at_date = [r['name'] for r in transactions_at_date]
 
-            print(f'found the following event names {event_names_at_date}')
-
-            if each_transaction['name'] in event_names_at_date:
+            print(f'found the following events {transactions_at_date}')
+            if matches_duplicate_transaction(each_transaction, transactions_at_date):
                 continue  # skip it
 
         valid_events.append(each_transaction)
@@ -401,6 +414,14 @@ def get_all_balances():
             
             from balances) b  
             where event_datetime = most_recent;
+    """
+    res = db_controller.execute_on_db(statement)
+    return res['result']
+
+
+def get_latest_trans_date():
+    statement = """
+        select account_name, max(event_datetime) from transactions group by 1 order by 1;
     """
     res = db_controller.execute_on_db(statement)
     return res['result']

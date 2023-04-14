@@ -209,25 +209,54 @@ def get_current_balances():
     for b in bals:
         print(b)
 
+
 get_current_balances()
 
+# '{account_name}',
+# '{event_datetime}',
+# {amount_cents}
+
+print(transactions.get_latest_trans_date())
 
 
+# import sys
+# sys.exit(0)
 
+transactions.add_balances_to_db(
+    [
+        # {'account_name': 'cibc_cheq', 'event_datetime': dt.now(), 'amount_cents': '1366942'},
+        # {'account_name': 'cibc_sav', 'event_datetime': dt.now(), 'amount_cents': '400000'},
+        # {'account_name': 'cibc_cc', 'event_datetime': dt.now(), 'amount_cents': '0'},
+        #
+        # {'account_name': 'vc_cheq', 'event_datetime': dt.now(), 'amount_cents': '55474'},
+        # {'account_name': 'vc_sav', 'event_datetime': dt.now(), 'amount_cents': '1700488'},
+        #
+        #
+        # # # #
+        # {'account_name': 'wf_tfsa', 'event_datetime': dt.now(), 'amount_cents': '3751110'},
+        # {'account_name': 'ws_sav', 'event_datetime': dt.now(), 'amount_cents': '2038189'},
+        # {'account_name': 'ws_trade', 'event_datetime': dt.now(), 'amount_cents': '168476'},
+        # # # #
+        # {'account_name': 'morgan_stanley', 'event_datetime': dt.now(), 'amount_cents': '193968'},
+        #
+        # {'account_name': 'sunlife_rrsp', 'event_datetime': dt.now(), 'amount_cents': '11307328'},
+
+    ]
+)
 
 
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc (14).csv',  # mac
-#     'cibc_cc'
+#     '/Users/themadisons/Downloads/cibc(24).csv',  # mac
 #     'cibc_cheq'
 # )
 #
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc (13).csv',  # mac
-
+#     '/Users/themadisons/Downloads/cibc(25).csv',  # mac
+#     'cibc_cc'
 # )
-
+#
+#
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/statement (1).csv',  # mac
+#     '/Users/themadisons/Downloads/statement (22).csv',  # mac
 #     'vc_cheq'
 # )
