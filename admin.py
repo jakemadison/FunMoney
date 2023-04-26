@@ -239,24 +239,26 @@ transactions.add_balances_to_db(
         # # # #
         # {'account_name': 'morgan_stanley', 'event_datetime': dt.now(), 'amount_cents': '193968'},
         #
-        # {'account_name': 'sunlife_rrsp', 'event_datetime': dt.now(), 'amount_cents': '11307328'},
+        # {'account_name': 'rrsp', 'event_datetime': dt.now(), 'amount_cents': '11307328'},
 
     ]
 )
 
 print('\n\n')
-add_transactions_from_csv(
-    '/Users/themadisons/Downloads/cibc(24).csv',  # mac
-    'cibc_cheq'
-)
-#
+
+
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/cibc(25).csv',  # mac
+#     '/Users/themadisons/Downloads/cibc(26).csv',  # mac
+#     'cibc_cheq'
+# )
+# #
+# add_transactions_from_csv(
+#     '/Users/themadisons/Downloads/cibc(27).csv',  # mac
 #     'cibc_cc'
 # )
 #
 #
 # add_transactions_from_csv(
-#     '/Users/themadisons/Downloads/statement (22).csv',  # mac
+#     '/Users/themadisons/Downloads/statement (23).csv',  # mac
 #     'vc_cheq'
 # )

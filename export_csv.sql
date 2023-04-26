@@ -4,7 +4,7 @@
 select * from transactions;
 
 .output balances.csv
-select * from balances;
+select date(event_datetime), account_name, amount_cents from balances order by event_datetime;
 
-.output daily_balances.csv
-select * from daily_balances;
+-- .output daily_balances.csv
+-- select * from daily_balances;
