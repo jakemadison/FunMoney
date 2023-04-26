@@ -224,22 +224,7 @@ print(transactions.get_latest_trans_date())
 
 transactions.add_balances_to_db(
     [
-        # {'account_name': 'cibc_cheq', 'event_datetime': dt.now(), 'amount_cents': '1366942'},
-        # {'account_name': 'cibc_sav', 'event_datetime': dt.now(), 'amount_cents': '400000'},
-        # {'account_name': 'cibc_cc', 'event_datetime': dt.now(), 'amount_cents': '0'},
-        #
-        # {'account_name': 'vc_cheq', 'event_datetime': dt.now(), 'amount_cents': '55474'},
-        # {'account_name': 'vc_sav', 'event_datetime': dt.now(), 'amount_cents': '1700488'},
-        #
-        #
-        # # # #
-        # {'account_name': 'wf_tfsa', 'event_datetime': dt.now(), 'amount_cents': '3751110'},
-        # {'account_name': 'ws_sav', 'event_datetime': dt.now(), 'amount_cents': '2038189'},
-        # {'account_name': 'ws_trade', 'event_datetime': dt.now(), 'amount_cents': '168476'},
-        # # # #
-        # {'account_name': 'morgan_stanley', 'event_datetime': dt.now(), 'amount_cents': '193968'},
-        #
-        # {'account_name': 'rrsp', 'event_datetime': dt.now(), 'amount_cents': '11307328'},
+
 
     ]
 )
