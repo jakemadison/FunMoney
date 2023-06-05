@@ -18,6 +18,8 @@ tracked_accounts = []
 min_date = None
 max_date = None
 
+interpolate_with_balances = True
+
 # do a single pass to parse the data:
 with open(target) as f:
     reader = csv.reader(f)
@@ -43,12 +45,29 @@ with open(target) as f:
         # max_date = parsed_date
 
 
+# now do a pass to read in daily_transactions.csv
+daily_transaction_data = {}
+with open('daily_transactions.csv') as f:
+    reader = csv.reader(f)
+    for i, line in enumerate(reader):
+        # skip header
+        if i == 0:
+            continue
+
+        e_date, account, amount = line
+
+        if e_date not in daily_transaction_data:
+            daily_transaction_data[e_date] = {}
+        daily_transaction_data[e_date][account] = amount
+
+
 export_rows = []
 curr_date = min_date
 curr_acct_balance = {}
 
 max_date = dt.datetime.now().date()
 
+# now do the actual work of interpolating:
 while curr_date.date() <= max_date:
     for account in tracked_accounts:
         # look up from parsed:
@@ -63,6 +82,12 @@ while curr_date.date() <= max_date:
         if days_balance is None:
             continue
 
+        if interpolate_with_balances:
+            # now modify by the sum of transactions on that day:
+            transaction_modifier = daily_transaction_data.get(curr_date.strftime(dt_fmt), {}).get(account)
+            if transaction_modifier is not None:
+                days_balance = int(days_balance) + int(transaction_modifier)
+
         row = [
             curr_date.strftime(dt_fmt),
             account,
@@ -74,6 +99,7 @@ while curr_date.date() <= max_date:
     curr_date += dt.timedelta(days=1)
 
 
+# write out to file
 with open('interpolated_daily_bal.csv', 'w') as f:
     writer = csv.writer(f)
     for i, row in enumerate(export_rows):
